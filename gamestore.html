@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게임 상점</title>
+    <style>
+      /* 기본 스타일 */
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        background-image: url('images/background.png'); /* 배경 이미지 설정 */
+        background-size: cover; /* 이미지 크기 조정 */
+        background-position: center; /* 이미지 위치 중앙 정렬 */
+        color: white;
+      }
+
+      .container {
+        min-height: 100vh;
+        padding: 16px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: gray;
+        cursor: pointer;
+      }
+
+      .coin-info {
+        display: flex;
+        align-items: center;
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-left: 8px;
+      }
+
+      .coin-info img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .settings {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+
+      .settings {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px;
+      }
+
+      .settings img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .add-friend {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .add-friend img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .home {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .home img {
+        width: 24px;
+        height: 24px;
+      }
+      .shop-container {
+        background-color: #2a2a729e;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%; /* 화면 너비에 맞춰 가득 차게 설정 */
+        height: 100%; /* 화면 높이에 맞춰 가득 차게 설정 */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        color: white;
+        overflow-y: auto; /* 내용이 넘칠 경우 스크롤 가능 */
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .offers,
+      .bundles {
+        margin-bottom: 20px;
+      }
+      .offer-item,
+      .bundle-item {
+        background-color: #3b3b8c;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .price {
+        color: #6a5acd;
+        font-weight: bold;
+      }
+      .button {
+        background-color: #6a5acd;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .button:hover {
+        background-color: #5a4ab3;
+      }
+      .best-seller {
+        border: 2px solid #ffcc00;
+        padding: 10px;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shop-container">
+      <!-- Header -->
+      <header>
+        <div class="profile">
+          <div class="avatar" onclick="goToRatePage()">
+            <img
+              id="user-avatar"
+              src="images/userimage.png"
+              alt="User avatar"
+            />
+          </div>
+          <div>
+            <h1
+              id="user-name"
+              style="margin: 0; font-weight: bold; font-size: 1.25rem"
+            >
+              User Name
+            </h1>
+            <p id="user-id" style="margin: 0; color: #bbb">@User ID</p>
+          </div>
+          <div class="coin-info">
+            <img src="images/coin.png" alt="Coin" />
+            <span id="user-coin" style="margin-left: 8px">12,345C</span>
+          </div>
+        </div>
+        <!-- 버튼 그룹 -->
+        <div style="display: flex; gap: 12px">
+          <button class="home" onclick="goHome()">
+            <img src="images/home.png" alt="Home" />
+          </button>
+          <button class="add-friend" onclick="goToFriendPage()">
+            <img src="images/addfriend_icon.png" alt="Add Friend" />
+          </button>
+          <button class="settings" onclick="logout()">
+            <img src="images/set.png" alt="Settings" />
+          </button>
+        </div>
+      </header>
+      <div class="header">
+        <h1>상점</h1>
+        <div>포커칩 구매</div>
+      </div>
+
+      <div class="offers">
+        <h2>특별 제안</h2>
+        <div class="offer-item">
+          <span>세일 중</span>
+          <span>10000칩</span>
+          <span class="price">99900원</span>
+          <button class="button">구매</button>
+        </div>
+      </div>
+
+      <div class="bundles">
+        <h2>포커칩</h2>
+        <div class="bundle-item">
+          <span>100칩</span>
+          <span class="price">2000원</span>
+          <button class="button">구매</button>
+        </div>
+        <div class="bundle-item">
+          <span>1000칩</span>
+          <span class="price">20000원</span>
+          <button class="button">구매</button>
+        </div>
+        <div class="bundle-item best-seller">
+          <span>2000칩</span>
+          <span class="price">38000원</span>
+          <button class="button">구매</button>
+        </div>
+        <div class="bundle-item">
+          <span>5000칩</span>
+          <span class="price">75000원</span>
+          <button class="button">구매</button>
+        </div>
+        <div class="bundle-item">
+          <span>10000칩</span>
+          <span class="price">120000원</span>
+          <button class="button">구매</button>
+        </div>
+        <div class="bundle-item">
+          <span>100000칩</span>
+          <span class="price">200000원</span>
+          <button class="button">구매</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // 로그아웃 처리
+      function logout() {
+        alert('로그아웃되었습니다.');
+        window.location.href = 'login.html';
+      }
+
+      // 홈 버튼 클릭 시 main.html로 이동
+      function goHome() {
+        window.location.href = 'main.html';
+      }
+
+      // 친구 추가 페이지로 이동
+      function goToFriendPage() {
+        window.location.href = 'friend.html';
+      }
+
+      // 유저 정보 가져오기
+      function fetchUserInfo() {
+        fetch('http://indianpoker.mooo.com:9998/api/member/info', {
+          method: 'GET',
+          headers: {
+            Authorization: `${localStorage.getItem('jwt_token')}`,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const userName = data.nickname;
+            const userId = data.id;
+            const money = data.money;
+            document.getElementById('user-name').innerText = userName;
+            document.getElementById('user-id').innerText = `@${userId}`;
+            document.getElementById('user-coin').innerText = `${money}C`;
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+    </script>
+  </body>
+</html>
