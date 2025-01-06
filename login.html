@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <style>
+      /* 기존 스타일 유지 */
+      .auth-background {
+        background-image: url('images/background.png');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        color: white;
+      }
+
+      .auth-background::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(26, 22, 37, 0.95) 0%,
+          rgba(26, 22, 37, 0.85) 100%
+        );
+        z-index: 1;
+      }
+
+      .auth-background > * {
+        position: relative;
+        z-index: 2;
+      }
+
+      .auth-container {
+        width: 100%;
+        max-width: 400px;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 24px;
+      }
+
+      .toggle-buttons {
+        display: flex;
+        border-radius: 9999px;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 4px;
+        margin-bottom: 24px;
+      }
+
+      .toggle-buttons button {
+        flex: 1;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+        color: #d1d5db;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+      }
+
+      .toggle-buttons button.active {
+        background-color: #7e3af2;
+        color: white;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      label {
+        display: block;
+        color: white;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .input-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      input {
+        width: 80%;
+        padding: 12px;
+        background-color: #2a2435;
+        border: 1px solid #3d3649;
+        color: white;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      input[type='checkbox'] {
+        cursor: pointer;
+      }
+
+      .checkbox-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      .checkbox-group label {
+        font-size: 14px;
+      }
+
+      button[type='submit'] {
+        width: 100%;
+        padding: 12px;
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      button[type='submit']:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div class="auth-background">
+      <div class="auth-container">
+        <!-- Title -->
+        <h1>로그인</h1>
+
+        <!-- Toggle Buttons -->
+        <div class="toggle-buttons">
+          <button class="active" onclick="toggleForm(true)">로그인</button>
+          <button onclick="toggleForm(false)">회원가입</button>
+        </div>
+
+        <!-- Form -->
+        <form class="form" onsubmit="handleSubmit(event)">
+          <!-- Login/Signup fields -->
+          <div class="form-group">
+            <label for="id">아이디</label>
+            <div class="input-container">
+              <input
+                id="id"
+                type="text"
+                placeholder="아이디를 입력하세요"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">비밀번호</label>
+            <div class="input-container">
+              <input
+                id="password"
+                type="password"
+                placeholder="비밀번호를 입력하세요"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Signup fields (only visible on Signup) -->
+          <div class="form-group signup-fields" style="display: none">
+            <label for="name">이름</label>
+            <div class="input-container">
+              <input id="name" type="text" placeholder="이름을 입력하세요" />
+            </div>
+          </div>
+
+          <div class="form-group signup-fields" style="display: none">
+            <label for="nickname">닉네임</label>
+            <div class="input-container">
+              <input
+                id="nickname"
+                type="text"
+                placeholder="닉네임을 입력하세요"
+              />
+            </div>
+          </div>
+
+          <!-- 아이디 저장, 로그인 저장 체크박스를 한 줄로 표시 -->
+          <div class="checkbox-group">
+            <div>
+              <input type="checkbox" id="saveId" />
+              <label for="saveId">아이디 저장</label>
+            </div>
+            <div>
+              <input type="checkbox" id="autoLogin" />
+              <label for="autoLogin">로그인 저장</label>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-btn">로그인</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let isLoginMode = true; // 현재 폼 모드 상태
+      let token = localStorage.getItem('jwtToken') || ''; // JWT 토큰 불러오기
+
+      // 페이지 로드 시 저장된 정보 자동 입력/자동 로그인 처리
+      window.onload = function () {
+        const savedId = localStorage.getItem('savedId');
+        const savedPassword = localStorage.getItem('savedPassword');
+        const autoLogin = localStorage.getItem('autoLogin') === 'true';
+
+        if (savedId) {
+          document.getElementById('id').value = savedId;
+          document.getElementById('saveId').checked = true;
+        }
+
+        if (autoLogin && savedId && savedPassword) {
+          document.getElementById('password').value = savedPassword;
+          document.getElementById('autoLogin').checked = true;
+          handleSubmit(new Event('submit')); // 자동 로그인 시도
+        }
+      };
+
+      function toggleForm(isLogin) {
+        isLoginMode = isLogin;
+        const formTitle = document.querySelector('h1');
+        const submitButton = document.querySelector('#submit-btn');
+        const signupFields = document.querySelectorAll('.signup-fields');
+        const loginFields = document.querySelectorAll('.checkbox-group');
+
+        if (isLogin) {
+          formTitle.textContent = '로그인';
+          submitButton.textContent = '로그인';
+          signupFields.forEach((field) => (field.style.display = 'none'));
+          loginFields.forEach((field) => (field.style.display = 'flex'));
+        } else {
+          formTitle.textContent = '회원가입';
+          submitButton.textContent = '회원가입하기';
+          signupFields.forEach((field) => (field.style.display = 'block'));
+          loginFields.forEach((field) => (field.style.display = 'none'));
+        }
+
+        // Toggle active button class
+        const buttons = document.querySelectorAll('.toggle-buttons button');
+        buttons.forEach((button) => button.classList.remove('active'));
+        buttons[isLogin ? 0 : 1].classList.add('active');
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+
+        if (isLoginMode) {
+          // 로그인 처리
+          const formData = new FormData();
+          const username = document.getElementById('id').value;
+          const password = document.getElementById('password').value;
+
+          formData.append('username', username);
+          formData.append('password', password);
+
+          axios
+            .post('http://indianpoker.mooo.com:9998/api/login', formData)
+            .then((response) => {
+              token = response.headers['Authorization'];
+              localStorage.setItem('jwtToken', token); // 토큰 저장
+
+              // 아이디/비밀번호 저장 체크 여부 확인
+              if (document.getElementById('saveId').checked) {
+                localStorage.setItem('savedId', username);
+              } else {
+                localStorage.removeItem('savedId');
+              }
+
+              if (document.getElementById('autoLogin').checked) {
+                localStorage.setItem('savedPassword', password);
+                localStorage.setItem('autoLogin', 'true');
+              } else {
+                localStorage.removeItem('savedPassword');
+                localStorage.removeItem('autoLogin');
+              }
+
+              alert('로그인 성공! 메인 페이지로 이동합니다.');
+              window.location.href = 'main.html'; // 로그인 성공 시 페이지 이동
+            })
+            .catch((error) => {
+              alert('로그인 실패! 다시 시도해주세요.');
+              console.error(error);
+            });
+        } else {
+          // 회원가입 처리
+          const data = {
+            username: document.getElementById('id').value,
+            password: document.getElementById('password').value,
+            name: document.getElementById('name').value,
+            nickname: document.getElementById('nickname').value,
+            money: null,
+            role: null,
+          };
+
+          axios
+            .post('http://indianpoker.mooo.com:9998/api/member/join', data)
+            .then((response) => {
+              alert('회원가입 성공! 이제 로그인하세요.');
+              toggleForm(true); // 회원가입 후 로그인 폼으로 전환
+            })
+            .catch((error) => {
+              alert('회원가입 실패! 다시 시도해주세요.');
+              console.error(error);
+            });
+        }
+      }
+    </script>
+  </body>
+</html>

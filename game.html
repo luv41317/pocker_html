@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Indian Poker</title>
+    <style>
+      /* 기본 스타일 */
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        background-image: url('images/background.png'); /* 배경 이미지 설정 */
+        background-size: cover; /* 이미지 크기 조정 */
+        background-position: center; /* 이미지 위치 중앙 정렬 */
+        color: white;
+      }
+
+      .container {
+        min-height: 100vh;
+        padding: 16px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: gray;
+        cursor: pointer;
+      }
+
+      .coin-info {
+        display: flex;
+        align-items: center;
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-left: 8px;
+      }
+
+      .coin-info img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .settings {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+
+      .settings {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px;
+      }
+
+      .settings img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .add-friend {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .add-friend img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .home {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .home img {
+        width: 24px;
+        height: 24px;
+      }
+
+      /* 게임 테이블 스타일 */
+      .game-table {
+        position: relative;
+        width: 100%;
+        padding-top: 50%;
+        background-image: url('images/table.png'); /* 테이블 이미지로 배경 설정 */
+        background-size: 50%; /* 이미지 크기를 절반으로 설정 */
+        background-position: center; /* 이미지 위치 중앙 정렬 */
+        background-repeat: no-repeat; /* 이미지가 반복되지 않게 설정 */
+        border: 2px solid rgba(128, 0, 128, 0.2);
+        border-radius: 50px;
+        margin-bottom: 20px;
+      }
+
+      .game-table .players {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        justify-content: space-between;
+        width: 80%;
+      }
+
+      .player {
+        text-align: center;
+      }
+
+      .player img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+      }
+
+      .cards {
+        display: flex;
+        gap: 200px;
+      }
+
+      .card {
+        width: 80px;
+        height: 120px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        background: white;
+        color: black;
+        border: 1px solid #ccc;
+      }
+
+      .card-back {
+        background: none;
+        padding: 0;
+      }
+
+      .card-back img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+      }
+
+      .winner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        font-weight: bold;
+        color: yellow;
+        animation: bounce 1s infinite;
+        display: none; /* 승리 멘트를 처음에는 숨깁니다 */
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.2);
+        }
+      }
+
+      .game-start-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .game-start-btn .button {
+        padding: 12px 24px;
+        border-radius: 5px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        font-size: 1.25rem;
+        cursor: pointer;
+      }
+
+      .game-start-btn .button:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+
+      /* 채팅 영역 스타일 */
+      .chat-container {
+        position: fixed;
+        bottom: 16px;
+        right: 16px; /* 화면 오른쪽에 고정 */
+        width: 80%; /* 필요에 따라 너비를 설정 */
+        max-width: 400px; /* 최대 너비 설정 */
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 16px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* 채팅 입력창 스타일 */
+      .input {
+        width: 100px; /* 가로 길이를 더 늘림 */
+        padding: 8px;
+        border-radius: 5px;
+        margin-right: 10px; /* 오른쪽 여백 추가 */
+      }
+
+      /* 버튼과 입력창을 가로로 배치 */
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* 보내기 버튼 스타일 */
+      .button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* 배팅 및 버튼 스타일 */
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 80%;
+      }
+
+      .input {
+        width: 30%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .button.die {
+        background: rgba(255, 0, 0, 0.2);
+      }
+
+      .button.die:hover {
+        background: rgba(255, 0, 0, 0.4);
+      }
+
+      .bet-input {
+        width: 60px;
+        padding: 8px;
+        border-radius: 5px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="profile">
+          <div class="avatar" onclick="goToRatePage()">
+            <img id="user-avatar" src="images/userimage.png" alt="User avatar" />
+          </div>
+          <div>
+            <h1 id="user-name" style="margin: 0; font-weight: bold; font-size: 1.25rem">
+              User Name
+            </h1>
+            <p id="user-id" style="margin: 0; color: #bbb">@User ID</p>
+          </div>
+          <div class="coin-info">
+            <img src="images/coin.png" alt="Coin" />
+            <span id="user-coin" style="margin-left: 8px">12,345C</span>
+          </div>
+        </div>
+        <!-- 버튼 그룹 -->
+        <div style="display: flex; gap: 12px">
+          <button class="home" onclick="goHome()">
+            <img src="images/home.png" alt="Home" />
+          </button>
+          <button class="add-friend" onclick="goToFriendPage()">
+            <img src="images/addfriend_icon.png" alt="Add Friend" />
+          </button>
+          <button class="settings" onclick="logout()">
+            <img src="images/set.png" alt="Settings" />
+          </button>
+        </div>
+      </header>
+      
+      <!-- Game Table -->
+      <div class="game-table">
+        <div class="players">
+          <!-- Player 1 -->
+          <div class="player">
+            <img src="images/userimage.png" alt="Player 1" />
+            <div class="player-name">유저1</div>
+          </div>
+
+          <!-- Cards -->
+          <div class="cards">
+            <!-- 왼쪽 카드: 시작부터 앞면 -->
+            <div class="card" id="player1-card">6</div>
+
+            <!-- 오른쪽 카드: 시작부터 뒷면 -->
+            <div class="card card-back" id="player2-card">
+              <img src="images/card.png" alt="Card Back" />
+            </div>
+          </div>
+
+          <!-- Player 2 -->
+          <div class="player">
+            <img src="images/userimage.png" alt="Player 2" />
+            <div class="player-name">유저2</div>
+          </div>
+        </div>
+
+        <!-- Game Start Button -->
+        <div class="game-start-btn">
+          <button class="button" id="start-game-btn" onclick="startGame()">
+            게임 시작
+          </button>
+        </div>
+
+
+        <!-- Winner Announcement -->
+        <div class="winner">유저2가 10 코인으로 승리!</div>
+      </div>
+
+    <!-- 배팅 및 버튼 스타일 -->
+    <div class="controls">
+      <div class="buttons">
+        <input type="number" id="bet-input" class="bet-input" value="10" min="1" />
+        <button class="button">배팅</button>
+        <button class="button" id="all-in-btn">올인</button>
+        <button class="button die">DIE</button>
+      </div>
+    </div>
+
+
+    <!-- 승리 멘트와 총 베팅된 코인 수 -->
+    <div class="winner">유저2가 10 코인으로 승리!</div>
+    <div id="total-bet">총 베팅된 코인: 0C</div> <!-- 총 베팅된 코인 표시 -->
+
+    <!-- 채팅 영역 -->
+    <div class="chat-container">
+      <div class="chat-box" id="chat-box">
+        <!-- 채팅 메시지가 여기에 추가됩니다 -->
+      </div>
+
+      <!-- 입력창과 보내기 버튼 -->
+      <div class="controls">
+        <input
+          type="text"
+          id="chat-input"
+          class="input"
+          placeholder="채팅 입력하기"
+        />
+        <button id="chat-send" class="button">보내기</button>
+      </div>
+    </div>
+
+    <script>
+      // 웹소켓 연결
+      const socket = new WebSocket('ws://118.218.179.22:9998/api/ws/connect');
+
+      // 웹소켓 연결 시
+      socket.addEventListener('open', () => {
+        console.log('WebSocket 연결이 열렸습니다.');
+
+        // 핸드셰이크 후 필요한 정보 요청 (JWT 토큰, roomId 등)
+        const jwtToken = localStorage.getItem('jwt_token');
+        const roomId = 'YOUR_ROOM_ID'; // 방 ID
+
+        socket.send(JSON.stringify({
+          type: 'handshake',
+          authorization: jwtToken,
+          roomId: roomId
+        }));
+      });
+
+      // 서버에서 메시지 수신
+      socket.addEventListener('message', (event) => {
+        const { type, message, value, sender, member, money } = JSON.parse(event.data);
+
+        // message가 있을 경우만 처리
+        if (message) {
+          addChatMessage(message, 'system');  // 시스템 메시지를 채팅에 표시
+        }
+
+        // 타입별 처리 (필요한 경우에만 처리)
+        switch (type) {
+          case 'start':
+            sendMessage('start', null, "게임을 시작합니다!");
+            break;
+
+          case 'bet':
+            sendMessage('bet', totalBet, `총 베팅 금액: ${totalBet}C`);
+            break;
+
+          case 'get_winner':
+            sendMessage('get_winner', value, `승리자 ${sender}님! 베팅 금액: ${value}C`);
+            break;
+
+          case 'die':
+            sendMessage('die', value, `${sender}님이 DIE를 외쳤습니다! 들고 있던 숫자는: ${value}입니다!`);
+            break;
+
+          case 'all_in':
+            sendMessage('all_in', null, `${sender}님이 올인했습니다!`);
+            break;
+
+          case 'end':
+            sendMessage('end', null, message);
+            resetGame(); // 게임 종료 후 리셋
+            break;
+
+          case 'roomid':
+            sendMessage('roomid', null, message);
+            break;
+
+          case 'send_message':
+            sendMessage('send_message', null, message); // 사용자 메시지 처리
+            break;
+
+          default:
+            console.log(`알 수 없는 타입: ${type}`);
+        }
+      });
+
+      // 서버로 전송할 메시지 함수
+      function sendMessage(type, value = null, message = null) {
+        const data = { type };
+
+        if (value !== null) data.value = value;
+        if (message !== null) data.message = message;
+
+        socket.send(JSON.stringify(data));
+      }
+
+      // 게임 시작 함수
+      function startGame() {
+        const bet = parseInt(document.getElementById('bet-input').value);
+
+        // 서버에 카드 배분 요청을 웹소켓으로 전송
+        socket.send(JSON.stringify({
+          type: 'start',
+          message: "게임을 시작합니다!"
+        }));
+
+        // 게임 시작 후 게임 시작 버튼 비활성화
+        document.getElementById('start-game-btn').disabled = true;
+      }
+
+      // 채팅 메시지 추가
+      function addChatMessage(message, type = 'user') {
+        const chatBox = document.getElementById('chat-box');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message');
+        messageElement.classList.add(type); // 유저 or 시스템
+
+        // 시스템 메시지에 노란색 스타일 적용
+        if (type === 'system') {
+          messageElement.style.color = 'yellow';
+          messageElement.style.fontWeight = 'bold';
+        }
+
+        messageElement.innerText = message;
+        chatBox.appendChild(messageElement);
+
+        // 스크롤을 가장 아래로 자동 이동
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      // 'Enter' 키를 눌렀을 때 메시지 등록
+      document.getElementById('chat-input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' && this.value.trim() !== '') {
+          const message = this.value.trim();
+          socket.send(JSON.stringify({ type: 'chat', message }));
+          this.value = ''; // 입력창 비우기
+        }
+      });
+
+      // 유저 입장/퇴장 메시지 처리
+      function userJoinOrLeaveMessage(userName, action) {
+        const message = action === 'join' ? `${userName}님이 게임에 들어왔습니다.` : `${userName}님이 게임을 나갔습니다.`;
+
+        // 시스템 메시지 서버로 전송
+        socket.send(JSON.stringify({
+          type: 'system_message',
+          message: message
+        }));
+      }
+
+      // 총 베팅된 금액 업데이트
+      let totalBet = 0;
+      function updateTotalBet(bet) {
+        totalBet += bet;
+        document.getElementById('total-bet').innerText = `총 베팅된 코인: ${totalBet}C`;
+
+        // 총 베팅 금액을 서버로 전송
+        sendMessage('bet', totalBet, `총 베팅 금액: ${totalBet}C`);
+      }
+
+      // 게임 리셋 함수
+      function resetGame() {
+        totalBet = 0;  // 총 베팅 금액 초기화
+        document.getElementById('total-bet').innerText = '총 베팅된 코인: 0C';
+
+        // 카드 상태 리셋
+        document.getElementById('player1-card').innerHTML =
+          '<img src="images/card.png" alt="Card Back" />';
+        document.getElementById('player2-card').innerHTML =
+          '<img src="images/card.png" alt="Card Back" />';
+
+        // 게임 시작 버튼 다시 활성화
+        document.getElementById('start-game-btn').disabled = false;
+      }
+
+
+
+      // 로그아웃 처리
+      function logout() {
+        alert('로그아웃되었습니다.');
+        window.location.href = 'login.html';
+      }
+    
+      // 홈 버튼 클릭 시 main.html로 이동
+      function goHome() {
+        window.location.href = 'main.html';
+      }
+    
+      // 친구 추가 페이지로 이동
+      function goToFriendPage() {
+        window.location.href = 'friend.html';
+      }
+    
+      // 유저 정보 가져오기
+      function fetchUserInfo() {
+        fetch('http://indianpoker.mooo.com:9998/api/member/info', {
+          method: 'GET',
+          headers: {
+            Authorization: `${localStorage.getItem('jwt_token')}`,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const userName = data.nickname;
+            const userId = data.id;
+            const money = data.money;
+            document.getElementById('user-name').innerText = userName;
+            document.getElementById('user-id').innerText = `@${userId}`;
+            document.getElementById('user-coin').innerText = `${money}C`;
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+    </script>
+  </body>
+</html>

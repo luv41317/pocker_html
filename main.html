@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gaming Interface</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        background-image: url('images/background.png'); /* 배경 이미지 설정 */
+        background-size: cover; /* 이미지 크기 조정 */
+        background-position: center; /* 이미지 위치 중앙 정렬 */
+        color: white;
+      }
+      .container {
+        min-height: 100vh;
+        padding: 16px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: gray;
+        cursor: pointer;
+      }
+      .coin-info {
+        display: flex;
+        align-items: center;
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-left: 8px;
+      }
+      .coin-info img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .settings {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .settings {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px;
+      }
+      .settings img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .add-friend {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .add-friend img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .game-category,
+      .game-room {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .game-category {
+        height: 160px;
+        padding: 16px;
+      }
+      .game-room {
+        background-color: #2a2435;
+        border: 1px solid #3d3649;
+        padding: 16px;
+      }
+      .game-room img {
+        width: 120px;
+        height: 120px;
+      }
+      .room-image {
+        height: 160px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #1a1625;
+        border-radius: 12px;
+        margin-bottom: 16px;
+      }
+      @media (min-width: 768px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1024px) {
+        .grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="profile">
+          <div class="avatar" onclick="goToRatePage()">
+            <img
+              id="user-avatar"
+              src="images/userimage.png"
+              alt="User avatar"
+            />
+          </div>
+          <div>
+            <h1
+              id="user-name"
+              style="margin: 0; font-weight: bold; font-size: 1.25rem"
+            >
+              User Name
+            </h1>
+            <p id="user-id" style="margin: 0; color: #bbb">@User ID</p>
+          </div>
+          <div class="coin-info">
+            <img src="images/coin.png" alt="Coin" />
+            <span id="user-coin" style="margin-left: 8px">12,345C</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px">
+          <!-- 친구 추가 버튼 -->
+          <button class="add-friend" onclick="goToFriendPage()">
+            <img src="images/addfriend_icon.png" alt="Add Friend" />
+          </button>
+          <!-- 설정 버튼 -->
+          <button class="settings" onclick="logout()">
+            <img src="images/set.png" alt="Settings" />
+          </button>
+        </div>
+      </header>
+
+      <!-- Game Categories -->
+      <div class="grid">
+        <div
+          class="game-category"
+          style="
+            background-image: url('images/game1.png');
+            background-size: cover;
+          "
+        >
+          <div>
+            <h3 style="margin: 0 0 4px; font-weight: bold">게임 1</h3>
+            <p
+              style="
+                margin: 0;
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.875rem;
+              "
+            >
+              게임 1에 대한 간략 설명
+            </p>
+          </div>
+        </div>
+        <div
+          class="game-category"
+          style="
+            background-image: url('images/game2.png');
+            background-size: cover;
+          "
+        >
+          <div>
+            <h3 style="margin: 0 0 4px; font-weight: bold">게임 2</h3>
+            <p
+              style="
+                margin: 0;
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.875rem;
+              "
+            >
+              게임 2에 대한 간략 설명
+            </p>
+          </div>
+        </div>
+        <div
+          class="game-category"
+          style="
+            background-image: url('images/game3.png');
+            background-size: cover;
+          "
+        >
+          <div>
+            <h3 style="margin: 0 0 4px; font-weight: bold">게임 3</h3>
+            <p
+              style="
+                margin: 0;
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.875rem;
+              "
+            >
+              게임 3에 대한 간략 설명
+            </p>
+          </div>
+        </div>
+        <div
+          class="game-category"
+          style="
+            background-image: url('images/game4.png');
+            background-size: cover;
+          "
+        >
+          <div>
+            <h3 style="margin: 0 0 4px; font-weight: bold">게임 4</h3>
+            <p
+              style="
+                margin: 0;
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.875rem;
+              "
+            >
+              게임 4에 대한 간략 설명
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Rooms -->
+<div class="grid" id="game-rooms-grid">
+  <!-- 이 부분은 fetchGameRooms 함수에서 동적으로 채워집니다. -->
+</div>
+
+    <script>
+      function fetchUserInfo() {
+        fetch('http://indianpoker.mooo.com:9998/api/member/info', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt_token')}`, // 로컬 스토리지에서 JWT 토큰을 가져옵니다
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // 필요한 값만 추출하여 출력
+            const userName = data.nickname; // 닉네임
+            const userId = data.id; // 유저 ID
+            const money = data.money; // 돈
+
+            // HTML에 유저 정보 표시
+            document.getElementById("user-name").innerText = userName;
+            document.getElementById("user-id").innerText = `@${userId}`;
+            document.getElementById("user-coin").innerText = `${money}C`; // 예시: 코인 정보
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+
+
+      // 게임방 목록을 불러오는 함수
+      function fetchGameRooms() {
+        // 각 roomId에 대해 이미지 경로를 설정한 배열
+        const roomImages = [
+          "images/gameroom1_background_icon.png",  // roomId 1
+          "images/gameroom2_background_icon.png",  // roomId 2
+          "images/gameroom3_background_icon.png",  // roomId 3
+          "images/gameroom4_background_icon.png"   // roomId 4
+        ];
+
+        fetch('http://indianpoker.mooo.com:9998/api/rooms')
+          .then((response) => response.json())
+          .then((rooms) => {
+            const gameRoomsGrid = document.getElementById('game-rooms-grid');
+            rooms.forEach((room) => {
+              const roomElement = document.createElement('div');
+              roomElement.classList.add('game-room');
+              
+              // roomId에 맞는 이미지 선택
+              const roomImage = roomImages[room.roomId - 1]; // 배열 인덱스는 0부터 시작하므로 roomId - 1
+              
+
+              roomElement.innerHTML = `
+                <h3 style="margin: 0 0 16px; font-size: 1.125rem">실시간 게임방 ${room.roomId}</h3>
+                <p style="margin: 0 0 8px; color: #bbb; font-size: 0.875rem">
+                  게임명: ${room.gameName}
+                </p>
+                <div class="room-image">
+                  <img
+                    src="${roomImage}"
+                    alt="Game room ${room.roomId} illustration"
+                  />
+                </div>
+                <div style="display: flex; justify-content: space-between">
+                  <span style="color: #d8b4ff">참여 가능 인원</span>
+                  <span style="color: #d8b4ff">${room.players} / ${room.maxPlayers}</span>
+                </div>
+                <button onclick="joinRoom(${room.roomId})">게임방 입장</button>
+              `;
+              gameRoomsGrid.appendChild(roomElement);
+            });
+          })
+          .catch((error) => console.error('Error fetching rooms:', error));
+      }
+
+
+
+      // 게임방 입장 함수
+      function joinRoom(roomId) {
+        const token = localStorage.getItem('jwtToken');
+        const wsUrl = `ws://118.218.179.22:9998/api/ws/connect?roomId=${roomId}&token=${token}`;
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = () => {
+          alert(`Room ${roomId}에 입장했습니다!`);
+          // WebSocket 연결이 성공하면 페이지 이동
+          window.location.href = `game.html?roomId=${roomId}`;
+        };
+
+        socket.onmessage = (message) => {
+          console.log('Received message:', message.data);
+        };
+
+        socket.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+
+        socket.onclose = () => {
+          console.log('Connection closed');
+        };
+      }
+
+
+      // 페이지 로드 시 API 호출
+      window.onload = () => {
+        fetchUserInfo();
+        fetchGameRooms(); // 게임 방 목록을 불러옴
+      };
+
+      function goToFriendPage() {
+        // 친구 추가 페이지로 이동
+        window.location.href = 'friend.html';
+      }
+
+      function goToRatePage() {
+        // user 이미지를 클릭하면 rate.html로 이동
+        window.location.href = 'rate.html';
+      }
+
+      function logout() {
+        // 로그아웃 처리 후 login.html로 이동
+        alert('로그아웃되었습니다.');
+        window.location.href = 'login.html';
+      }
+    </script>
+  </body>
+</html>

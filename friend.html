@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Friend Add</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        background-image: url('images/background.png');
+        background-size: cover;
+        background-position: center;
+        color: white;
+      }
+
+      .container {
+        min-height: 100vh;
+        padding: 16px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: gray;
+      }
+
+      .coin-info {
+        display: flex;
+        align-items: center;
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-left: 8px;
+      }
+      .coin-info img {
+        width: 24px;
+        height: 24px;
+      }
+      .settings {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .settings {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px;
+      }
+      .settings img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .home {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .home img {
+        width: 24px;
+        height: 24px;
+      }
+
+      /* 사용자 목록 */
+      .user-list {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .user-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background-color: #1f1b2e;
+        padding: 16px;
+        border-radius: 16px;
+        transition: background-color 0.3s;
+        margin-bottom: 20px;
+      }
+
+      .user-row:hover {
+        background-color: #252033;
+      }
+
+      .user-row .rank {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 32px;
+        height: 32px;
+        background-color: #2a2435;
+        border-radius: 8px;
+        font-weight: bold;
+      }
+
+      .user-row .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #707070;
+        overflow: hidden;
+      }
+
+      .user-row .profile-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-row .user-info {
+        flex: 1;
+      }
+
+      .user-row .user-info .username {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .user-row .user-info .user-id {
+        color: #b0b0b0;
+        font-size: 0.875rem;
+      }
+
+      .user-row .coins-level {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .user-row .coins-level .coins {
+        color: #fbbf24;
+        font-size: 1rem;
+      }
+
+      .user-row .coins-level .level {
+        background-color: #2a2435;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+      }
+
+      .user-row .coins-level button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        color: #b0b0b0;
+        transition: color 0.3s;
+        margin-right: 12px;
+      }
+
+      .user-row .coins-level button:last-child {
+        margin-right: 0;
+      }
+
+      .user-row .coins-level button:hover {
+        color: white;
+      }
+
+      /* 돋보기 버튼 */
+      .search-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background-color: #2a2435;
+        padding: 12px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+
+      .search-btn img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .search-btn:hover {
+        transform: scale(1.1);
+      }
+    </style>
+    <script>
+      function fetchUserInfo() {
+        fetch('http://indianpoker.mooo.com:9998/api/member/info', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt_token')}`, // 로컬 스토리지에서 JWT 토큰을 가져옵니다
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // 필요한 값만 추출하여 출력
+            const userName = data.nickname; // 닉네임
+            const userId = data.id; // 유저 ID
+            const money = data.money; // 돈
+
+            // HTML에 유저 정보 표시
+            document.getElementById("user-name").innerText = userName;
+            document.getElementById("user-id").innerText = `@${userId}`;
+            document.getElementById("user-coin").innerText = `${money}C`; // 예시: 코인 정보
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+
+      // 친구 목록 API 호출
+function fetchRecentPlayers() {
+  fetch('http://indianpoker.mooo.com:9998/api/recent_player', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('jwt_token')}`, // JWT 토큰을 로컬 스토리지에서 가져옵니다
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // 받은 데이터에서 key와 value를 배열화
+      const userIds = Object.keys(data);
+      const userNicknames = Object.values(data);
+
+      // 친구 목록을 동적으로 생성하여 HTML에 추가
+      const userListContainer = document.querySelector('.user-list');
+      userListContainer.innerHTML = ''; // 기존 친구 목록을 비움
+
+      // 최대 8명까지 표시
+      for (let i = 0; i < Math.min(userIds.length, 8); i++) {
+        const userId = userIds[i];
+        const userNickname = userNicknames[i];
+        const userRow = createUserRow(i + 1, userNickname, userId);
+        userListContainer.appendChild(userRow);
+      }
+    })
+    .catch((error) => console.error('Error:', error));
+}
+
+// 친구 목록 항목 생성 함수
+function createUserRow(rank, username, userId) {
+  const userRow = document.createElement('div');
+  userRow.classList.add('user-row');
+
+  userRow.innerHTML = `
+    <div class="rank">${rank}</div>
+    <div class="profile-img">
+      <img src="images/userimage.png" alt="User Avatar" />
+    </div>
+    <div class="user-info">
+      <div class="username">${username}</div>
+      <div class="user-id">@${userId}</div>
+    </div>
+    <div class="coins-level">
+      <div class="coins">12,345C</div>
+      <button onclick="sendFriendRequest('${userId}')">
+        <img
+          src="images/addfriend_icon.png"
+          alt="Add User"
+          width="24"
+          height="24"
+        />
+      </button>
+    </div>
+  `;
+
+  return userRow;
+}
+
+
+// 친구 추가 (친구 요청 보내기)
+function sendFriendRequest(friendId) {
+  if (!friendId) {
+    alert('아이디를 입력하세요.');
+    return;
+  }
+
+  fetch(
+    `http://indianpoker.mooo.com:9998/api/friend/invite?friendId=${friendId}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt_token')}`, // 로컬 스토리지에서 JWT 토큰을 가져옴
+      },
+    }
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('친구 요청 보내기 실패');
+      }
+      alert('친구 신청이 보내졌습니다.');
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      alert('친구 요청 보내기 실패');
+    });
+}
+
+
+// 페이지 로딩 시 친구 목록을 자동으로 불러옵니다.
+window.onload = function () {
+  fetchRecentPlayers();
+};
+
+      // 친구 추가 버튼 클릭 시 팝업 메시지 표시 함수
+      function showFriendRequestAlert() {
+        alert('친구 신청이 보내졌습니다.');
+      }
+
+      // 홈 버튼 클릭 시 main.html로 이동
+      function goHome() {
+        window.location.href = 'main.html';
+      }
+
+      // 돋보기 버튼 클릭 시 friend2.html로 이동
+      function goToFriendSearch() {
+        window.location.href = 'friend2.html';
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="profile">
+          <div class="avatar" onclick="goToRatePage()">
+            <img
+              id="user-avatar"
+              src="images/userimage.png"
+              alt="User avatar"
+            />
+          </div>
+          <div>
+            <h1
+              id="user-name"
+              style="margin: 0; font-weight: bold; font-size: 1.25rem"
+            >
+              User Name
+            </h1>
+            <p id="user-id" style="margin: 0; color: #bbb">@User ID</p>
+          </div>
+          <div class="coin-info">
+            <img src="images/coin.png" alt="Coin" />
+            <span id="user-coin" style="margin-left: 8px">12,345C</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px">
+          <button class="home" onclick="goHome()">
+            <img src="images/home.png" alt="Home" />
+          </button>
+          <button class="settings">
+            <img src="images/set.png" alt="Settings" />
+          </button>
+        </div>
+      </header>
+
+      <!-- User List -->
+      <div class="user-list">
+        <!-- 동적으로 생성된 사용자 목록이 여기에 삽입됩니다 -->
+      </div>
+
+      <!-- 돋보기 버튼 -->
+    <button class="search-btn" onclick="goToFriendSearch()">
+      <img src="images/search.png" alt="Search" />
+    </button>
+  </body>
+</html>
